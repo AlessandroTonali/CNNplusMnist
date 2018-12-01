@@ -34,68 +34,90 @@ def preprocess():
     return training, validation,test
 def main():
     training, validation, test = preprocess()
-    fastTrain(training, validation, test)
-    showResults(training, validation, test)
-    cnn = Network([784,30,10], [None, sigmoid, sigmoid])
-    function_pool = [ leaky_relu]
-    result = []
-    for func in function_pool:
-        cnn = Network([784, 30, 20, 10], [None, func, func])
-        print(str(func))
-        cnn.training(training, 100, 10, 0.5, 0.5, validation)
-        result.append(cnn.evaluate(validation))
-    plt.plot(result)
-    plt.show()
+    #showResults(training, validation, test)
+    print("here")
+    cnn = Network([784, 30, 10], [None, sigmoid, sigmoid])
+    cnn.training(training, 30, 10, 0.1, 5/len(training),validation,20,True)
 
-def fastTrain(training, validation, test):
-    alphas = [0.5, 1, 3, 5, 8, 16, 32, 64]
-    res = []
-    print("Now the number of epochs is 10, we check for different learning rates")
-    for i in alphas:
 
-        cnn = Network([784, 30, 10], [None, sigmoid, sigmoid])
-        start = time()
-        cnn.training(training, 1, 10, i, 0, validation, 10)
-        end = time()
-        print("The learning rate is: " + str(i) + " the accuracy of the test is: " + str(acc))
-        print("seconds taken")
-        print(end - start)
-        acc = cnn.evaluate(test)
-        res.append(acc)
-    plt.plot(alphas,res)
-    plt.show()
-    res = []
-    print("now we set the epochs to 30")
-    for i in alphas:
-        cnn = Network([784, 30, 10], [None, sigmoid, sigmoid])
-        start = time()
-        cnn.training(training, 30, 10, i, 0, validation, 10)
-        end = time()
-        print("The learning rate is: " + str(i) + " the accuracy of the test is: " + str(acc))
-        print("seconds taken")
-        print(end - start)
-        acc = cnn.evaluate(test)
-        res.append(acc)
 
-    plt.plot(alphas, res)
-    plt.show()
 
 
 
 
 
 def showResults(training, validation, test):
-    batch = [25, 50, 100, 200, 400, 800]
+    batch = [0.5,1,2,3,5,8,16,32,64]
     res = []
+    print("Alpha varies, 10 epochs, lambda = 0")
     for i in batch:
+        print("alpha = " + str(i))
         cnn = Network([784, 30, 10], [None, sigmoid, sigmoid])
-        cnn.training(training, 500, i, 0.1, 5/len(training), validation, 500)
-        res.append(cnn.evaluate(validation))
+        cnn.training(training, 10, 10, i, 0, validation)
+        res.append(cnn.evaluate(test))
+    plt.plot(batch, res)
+    plt.show()
+    batch = [0.5, 1, 2, 3, 5, 8, 16, 32, 64]
+    res = []
+    print("Alpha varies, 30 epochs, lambda = 0")
+    for i in batch:
+        print("alpha = " + str(i))
+        cnn = Network([784, 30, 10], [None, sigmoid, sigmoid])
+        cnn.training(training, 30, 10, i, 0, validation)
+        res.append(cnn.evaluate(test))
+    plt.plot(batch, res)
+    plt.show()
+
+
+    batch = [1, 3, 5, 8, 16]
+    res = []
+    print("Alpha varies, we wait for early stopping or 400 epochs, lambda = 1/len(training)")
+    for i in batch:
+        print("alpha = " + str(i))
+        cnn = Network([784, 30, 10], [None, sigmoid, sigmoid])
+        cnn.training(training, 400, 10, i, 1/len(training), validation, 20)
+        res.append(cnn.evaluate(test))
+    plt.plot(batch, res)
+    plt.show()
+
+    batch = [10, 20, 30, 40, 60, 70, 80, 90, 100]
+    res = []
+    print("Alpha= 3, we wait for early stopping or 400 epochs, lambda = 1/len(training), hidden nodes varies")
+    for i in batch:
+        print("alpha = " + str(i))
+        cnn = Network([784, i, 10], [None, sigmoid, sigmoid])
+        cnn.training(training, 400, 10, 3, 1 / len(training), validation, 20)
+        res.append(cnn.evaluate(test))
+    plt.plot(batch, res)
+    plt.show()
+
+    batch = [leaky_relu, tanh]
+    res = []
+    print("Alpha= 0.01, we wait for early stopping or 400 epochs, lambda = 1/len(training), activation function varies")
+    for i in batch:
+        print("alpha = " + str(i))
+        cnn = Network([784, i, 10], [None, i, i])
+        cnn.training(training, 400, 10, 0.01, 5/ len(training), validation, 20)
+        res.append(cnn.evaluate(test))
     plt.plot(res)
     plt.show()
+
+    print("Now we show the best result")
+    batch = [1]
+    for i in batch:
+        print("activation = " + str(i))
+        cnn = Network([784, 60, 10], [None, sigmoid, sigmoid])
+        cnn.training(training, 800, 10, 0.1, 5/len(training), validation, 20)
+        res.append(cnn.evaluate(test))
+
+
+
+
+
 
 
 
 
 if __name__ == '__main__':
-    main()
+   main()
+

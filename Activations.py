@@ -10,6 +10,8 @@ def prime_function(activation):
         return leaky_relu_prime
     if activation == tanh:
         return tanh_prime
+    if activation == myact:
+        return myact_prime
 
 def sigmoid(x):
     """The sigmoid function."""
@@ -40,6 +42,7 @@ def tanh(x):
 
 def tanh_prime(x):
     return 1 - np.power(np.tanh(x),2)
+
 
 
 

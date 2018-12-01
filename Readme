@@ -1,3 +1,17 @@
-This repository is still in progress, expected finish: 4 days.
-For now everything is working, just the results and instructions for running will be available in less than 4 days
-from now: 29/11/18
+The results i obtained can be reproduced by running the main of Results.py
+
+The function that can be used for training and creating a network are in Network and are:
+
+Network(architecture, activation_function)
+architecture: a list of the nodes of each layer
+activation_function: a list with the activation function of each layer, put a random one for the layer 0
+Training(self, trainData, T, n, alpha, lmbda, validation, patience=10, isL1= False):
+self is the CNN ( call with CNN.training(T .... )
+traindata: the training dataset
+T: number of epochs
+n: mini-batch size
+lmbda: regularization term(normalize it with len(training))
+validation: validation set
+patience: times where we let the system get worse before we trigger early stopping
+isL1: put it true if you would like to use L1 regularization instead of the default L2 regularization
+

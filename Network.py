@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.random import randn
-from Activations import sigmoid, prime_function, relu, leaky_relu
+from Activations import sigmoid, prime_function, relu, leaky_relu, tanh, myact
 from LossFunctions import dSquaredLoss
 from collections import deque
 from utils import gradient_multiplier
@@ -8,6 +8,7 @@ from database_loader import load_data
 from time import time
 from random import shuffle
 from copy import deepcopy
+from L1Regularization import trainingL1
 
 
 
@@ -39,7 +40,7 @@ class Network:
         return out_layer
 
 
-    def training(self, trainData, T, n, alpha, lmbda, validation, patience=10):
+    def training(self, trainData, T, n, alpha, lmbda, validation, patience=10, isL1= False):
         """
         trains the ANN with training dataset using stochastic gradient descent
         :param trainData: a list of tuples (x, y) representing the training inputs and the desired outputs.
@@ -47,9 +48,13 @@ class Network:
         :param n: size of mini-batches
         :param alpha: learning rate
         """
+        if isL1:
+            return trainingL1(self, trainData, T, n, alpha, lmbda, validation, patience)
         patience_count = 10
         max_acc = 0
         for i in range(0, T):
+            print("epoch: " + str(i))
+            print(max_acc)
             shuffle(trainData)
             batch_num = 0
             while (batch_num+1) * n <= len(trainData):
@@ -112,12 +117,12 @@ class Network:
         z = 1 - alpha* lmbda/ len(batch)
         j = 0
         while j < len(self.weights):
-            self.weights[j] = (1 - alpha * lmbda) * self.weights[j] - alpha/len(batch) * res_weight[j]
+            self.weights[j] = (1 - alpha * lmbda) * self.weights[j] - alpha * res_weight[j]
             j += 1
         j = 0
 
         while j < len(self.biases):
-            self.biases[j] = (1 - alpha * lmbda) * self.biases[j] - alpha / len(batch) * res_bias[j]
+            self.biases[j] = (1 - alpha * lmbda) * self.biases[j] - alpha * res_bias[j]
             j += 1
 
 
@@ -221,37 +226,7 @@ class Network:
 
 
 
-data = list(load_data())
-cnn = Network([784, 100, 10], [None, sigmoid, sigmoid])
 
-training = list(data[0])
-
-validation = list(data[1])
-
-test = list(data[2])
-
-i = 0
-
-while i < len(training):
-
-    x = np.transpose(training[i][0])[0]
-    y = np.transpose(training[i][1])[0]
-    training[i] = (x,y)
-    i = i + 1
-i = 0
-while i < len(validation):
-    tmp = validation[i]
-
-    x = np.transpose(validation[i][0])[0]
-    y = validation[i][1]
-    validation[i] = (x,y)
-    i = i + 1
-
-#print(len(training))
-
-#cnn.training(training, 50, 50, 3, 0, validation, 20)
-
-#cnn.evaluate(validation)
 
 
 
